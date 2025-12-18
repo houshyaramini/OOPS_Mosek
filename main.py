@@ -141,16 +141,8 @@ def run_simulation(config: SimulationConfig = None):
 
     print(f"Fertig! Log geschrieben in {config.log_file}")
 
-cfg = SimulationConfig(
-    use_crra=True,
-    n_wiederholungen=3000,
-    use_seed=True,
-    seed=252,
-    gamma=10,
-    bounds= [(0.0 , 1.0)] * 8,
-    pair_idx=False
 
-)
 
 if __name__ == "__main__":
     run_simulation(config=cfg)
+
