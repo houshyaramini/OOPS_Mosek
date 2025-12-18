@@ -144,5 +144,6 @@ def run_simulation(config: SimulationConfig = None):
 
 
 if __name__ == "__main__":
-    run_simulation(config=cfg)
+    run_simulation()
+
 
