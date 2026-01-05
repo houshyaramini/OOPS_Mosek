@@ -13,7 +13,6 @@ def daten_laden(Index, Derivate, RiskFreeRate):
     return df, df_options, rf
 
 def real_vola2(ret, start, d, Skalierung):
-    #start = start - pd.Timedelta(days=1)
     werte = ret[: start][-d:]
     return np.sqrt(werte.sum()) * np.sqrt(Skalierung / d)
 
@@ -81,9 +80,7 @@ def get_options_data(df_options: pd.DataFrame) -> OptionsData:
 
 @dataclass
 class ReturnsData:
-    """
-    Container für berechnete Returns und Volatilitäten.
-    """
+
     log_d: pd.Series          
     log_d_sqr: pd.Series      
     log_m: pd.Series          
@@ -100,9 +97,7 @@ def calculate_returns(
     end_date_vec: pd.Series,
     min_periods_z: int = 60
 ) -> ReturnsData:
-    """
-    Berechnet Return-Metriken basierend auf einem DataFrame mit 'Close'-Spalte.
-    """
+
     log_d = np.log(df["Close"] / df["Close"].shift(1)).dropna()
     log_d_sqr = log_d**2
     monthly_close = df["Close"].resample("ME").last()
@@ -128,3 +123,4 @@ def calculate_returns(
         start_prices=start_prices,
         end_prices=end_prices
     )
+
