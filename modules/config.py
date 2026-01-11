@@ -20,10 +20,9 @@ def get_log_path(filename):
 class SimulationConfig:
 
     file_spx: str = field(default_factory=lambda: get_data_path("SpxDaten.csv"))
-    file_options: str = field(default_factory=lambda: get_data_path("BloombergOptionsDatenNeu.csv"))
+    file_options: str = field(default_factory=lambda: get_data_path("DatabentoOptions_final.csv"))
     file_risk_free: str = field(default_factory=lambda: get_data_path("DSG1MO_fred.csv"))
     log_file: str = field(default_factory=lambda: get_log_path("simulation_log.csv"))
-    
     n_wiederholungen: int = 3000
     use_seed: bool = True
     seed: int = 999
@@ -33,10 +32,9 @@ class SimulationConfig:
     big_array: bool = False
     n_assets: int = 8  
     eps: float = 1e-3
-    
+    start_index: int = 0
+    end_index: Optional[int] = None
     d_window: List[int] = field(default_factory=lambda: [1, 5, 10, 20, 30, 60])
-    
-    
     long_idx: List[int] = field(default_factory=lambda: [0, 2, 4, 6])
     short_idx: List[int] = field(default_factory=lambda: [1, 3, 5, 7])
     pair_idx: List[List[int]] = field(default_factory=lambda: [[0, 1], [2, 3], [4, 5], [6, 7]])

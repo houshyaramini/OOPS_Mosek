@@ -26,12 +26,16 @@ def optimize_with_mosek(
     w0=None,
     use_crra: bool = False,
     n_threads=1,
+    alpha: float=0.05
 ):
     n_samples = returns.shape[0]
     n_assets = returns.shape[1]
     w = cp.Variable(n_assets)
     rf_t = float(rf.item())
     cash = 1.0 - cp.sum(w[long_idx]) + cp.sum(w[short_idx])
+    lp, up = alpha / 2, 1 - alpha / 2
+    lC, uC = np.quantile(returns,lp), np.quantile(returns,up)
+    returns = np.clip(returns, lC, uC)
     r_port = cash * rf_t + returns @ w
     x = cp.Variable(n_assets, boolean=True)
     constraints = []
@@ -45,7 +49,7 @@ def optimize_with_mosek(
         objective = cp.Maximize(cp.mean(r_port - gamma * 0.5 * cp.power(r_port, 2)))
 
     constraints.append(cp.sum(w[long_idx]) + cp.sum(w[short_idx]) <= 1.0)
-    # constraints.append(cp.sum(w[short_idx]) <= 0.0)
+    #constraints.append(cp.sum(w[short_idx]) <= 0.0)
     # constraints.append(cp.sum(w[long_idx]) <= 0.0)
     for i, (lb, ub) in enumerate(bounds):
         constraints.append(w[i] >= lb * x[i])
@@ -103,8 +107,6 @@ def optimize_period(i, rf_T, period_returns, config):
     d1,d2,d3,d4 = period_returns.shape
     if big_array == True:
         period_returns = period_returns.reshape(1, d1*d2,d3,d4)
-
-
 ##############################
     N_d_werte = period_returns.shape[0]
     best_util_in_t = -np.inf

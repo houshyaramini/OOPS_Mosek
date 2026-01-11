@@ -52,7 +52,8 @@ class OptionsData:
     ask: np.ndarray
     bid: np.ndarray
     strikes_all: np.ndarray
-    strikes_atm: np.ndarray
+    strikes_atm_call: np.ndarray
+    strikes_atm_put: np.ndarray
     strikes_otm_call: np.ndarray
     strikes_otm_put: np.ndarray
     maturity: pd.Series
@@ -64,17 +65,18 @@ def get_options_data(df_options: pd.DataFrame) -> OptionsData:
     df_clean = df_options.dropna()
     df_strikes = df_clean.filter(like="Strike")
     maturity= df_options.index.to_series().dropna()
-    N = len(maturity)-1
+    N = len(maturity)
     return OptionsData(
         ask = df_clean.filter(like="Ask").to_numpy(),
         bid = df_clean.filter(like="Bid").to_numpy(),
         strikes_all = df_strikes.to_numpy(),
-        strikes_atm = df_strikes.filter(like="ATM").squeeze().to_numpy(),
-        strikes_otm_call = df_strikes.filter(like="Call").squeeze().to_numpy(),
-        strikes_otm_put = df_strikes.filter(like="Put").squeeze().to_numpy(),
+        strikes_atm_call = df_strikes.filter(like="ATM_Strike_Call").squeeze().to_numpy(),
+        strikes_atm_put = df_strikes.filter(like="ATM_Strike_Put").squeeze().to_numpy(),
+        strikes_otm_call = df_strikes.filter(like="OTM_Call_Strike").squeeze().to_numpy(),
+        strikes_otm_put = df_strikes.filter(like="OTM_Put_Strike").squeeze().to_numpy(),
         maturity= maturity,
-        StartDatumPeriode = maturity[:N],
-        EndDatumPeriode = maturity[-N:],
+        StartDatumPeriode = maturity,
+        EndDatumPeriode = df_clean["Maturity"].squeeze(),
         N= N
     )
 
@@ -107,11 +109,21 @@ def calculate_returns(
     expanding_mean = log_m.expanding(min_periods=min_periods_z).mean().shift(1)
     z = (log_m - expanding_mean) / rv_m.shift(1)
     start_prices = df["Close"].reindex(start_date_vec, method="ffill").squeeze()
+    ####################################################
+    end_dates_dt = pd.to_datetime(end_date_vec)
+    days_to_shift = np.where(end_dates_dt.dt.dayofweek == 5, 2, 1)
+    lookup_dates = end_dates_dt - pd.to_timedelta(days_to_shift, unit="D")
+
     end_prices = (
         df["Close"]
-        .reindex(end_date_vec - pd.Timedelta(days=1), method="ffill")
+        .reindex(lookup_dates, method="ffill")
         .to_numpy()
     )
+    #end_prices = (
+     #   df["Close"]
+      #  .reindex(end_date_vec - pd.Timedelta(days=1), method="ffill")
+       # .to_numpy()
+    #)
 
     return ReturnsData(
         log_d=log_d,

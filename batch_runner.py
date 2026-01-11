@@ -13,15 +13,16 @@ for i in range(N_RUNS):
     current_gamma = GAMMA + i 
     print(f"\n--- Starte Run {i+1} von {N_RUNS}  ---")
     
-
     run_config = SimulationConfig(
-        use_crra=False,
-        use_seed=True,
-        gamma=15,
-        n_wiederholungen=2000,
+        use_crra=True,
+        #use_seed=True,
+        #seed=START_SEED,
+        gamma=current_gamma,
         big_array=True,
-
-        bounds=[(0.0 , 1.0)] * 8
+        n_wiederholungen=1000,
+        bounds=[(0.0 , 1.0)] * 8,
+        #worst_case=True,
+        #pair_idx=False
         )
     try:
         run_simulation(config=run_config)

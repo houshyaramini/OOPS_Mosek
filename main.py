@@ -69,8 +69,8 @@ def run_simulation(config: SimulationConfig = None):
 
     Sim_payoff_array = np.stack(
         [
-            payoff_vektor(S_t_arr, np.array(options_data.strikes_atm), "p"),
-            payoff_vektor(S_t_arr, np.array(options_data.strikes_atm), "c"),
+            payoff_vektor(S_t_arr, np.array(options_data.strikes_atm_put), "p"),
+            payoff_vektor(S_t_arr, np.array(options_data.strikes_atm_call), "c"),
             payoff_vektor(S_t_arr, np.array(options_data.strikes_otm_put), "p"),
             payoff_vektor(S_t_arr, np.array(options_data.strikes_otm_call), "c"),
         ],
