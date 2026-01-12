@@ -102,10 +102,11 @@ def calculate_returns(
 
     log_d = np.log(df["Close"] / df["Close"].shift(1)).dropna()
     log_d_sqr = log_d**2
-    monthly_close = df["Close"].resample("ME").last()
-    log_m = np.log(monthly_close / monthly_close.shift(1))
-    rv_m = np.sqrt(log_d_sqr.resample("ME").sum()).dropna()
-    stand_log_m = (log_m / rv_m.shift(1)).dropna()
+    squared_sum = log_d_sqr.resample("ME").sum()
+    log_m = log_d.resample("ME").sum()
+    rv_m = np.sqrt(squared_sum)
+    rv_m_prev = rv_m.shift(1)
+    stand_log_m = log_m / rv_m_prev
     expanding_mean = log_m.expanding(min_periods=min_periods_z).mean().shift(1)
     z = (log_m - expanding_mean) / rv_m.shift(1)
     start_prices = df["Close"].reindex(start_date_vec, method="ffill").squeeze()
@@ -117,13 +118,7 @@ def calculate_returns(
     end_prices = (
         df["Close"]
         .reindex(lookup_dates, method="ffill")
-        .to_numpy()
-    )
-    #end_prices = (
-     #   df["Close"]
-      #  .reindex(end_date_vec - pd.Timedelta(days=1), method="ffill")
-       # .to_numpy()
-    #)
+        .to_numpy())
 
     return ReturnsData(
         log_d=log_d,

@@ -20,7 +20,7 @@ for i in range(N_RUNS):
         gamma=current_gamma,
         big_array=True,
         n_wiederholungen=1000,
-        bounds=[(0.0 , 1.0)] * 8,
+        bounds=[(0.0 , 0.1)] * 8,
         #worst_case=True,
         #pair_idx=False
         )

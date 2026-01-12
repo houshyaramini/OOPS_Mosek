@@ -26,7 +26,7 @@ def optimize_with_mosek(
     w0=None,
     use_crra: bool = False,
     n_threads=1,
-    alpha: float=0.05
+    alpha: float=0.01
 ):
     n_samples = returns.shape[0]
     n_assets = returns.shape[1]
@@ -49,7 +49,7 @@ def optimize_with_mosek(
         objective = cp.Maximize(cp.mean(r_port - gamma * 0.5 * cp.power(r_port, 2)))
 
     constraints.append(cp.sum(w[long_idx]) + cp.sum(w[short_idx]) <= 1.0)
-    #constraints.append(cp.sum(w[short_idx]) <= 0.0)
+    constraints.append(cp.sum(w[short_idx]) <= 0.0)
     # constraints.append(cp.sum(w[long_idx]) <= 0.0)
     for i, (lb, ub) in enumerate(bounds):
         constraints.append(w[i] >= lb * x[i])
